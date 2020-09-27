@@ -9,7 +9,7 @@ const resolver = new Resolver({
 
 export { default as Services } from "./Services";
 
-export class ServiceManager {
+export class Manager {
   static initialized = false;
 
   constructor({ ref, config, ...options } = {}) {
@@ -60,14 +60,14 @@ export class ServiceManager {
           if (!isNull(data)) {
             this.config = data;
             this.setServices();
-          } else if (!ServiceManager.initialized) {
+          } else if (!Manager.initialized) {
             //If null data is found during initialization
             reject(new Error("No firebase service configuration found to initialize services."));
             this.servicesRef.off("value", handler);
             return;
           }
-          if (!ServiceManager.initialized) {
-            ServiceManager.initialized = true;
+          if (!Manager.initialized) {
+            Manager.initialized = true;
             resolve();
           }
         };
