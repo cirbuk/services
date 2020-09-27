@@ -1,0 +1,54 @@
+{
+  "name": "@kubric/services",
+  "version": "0.0.1",
+  "description": "Isomorphic configuration based services",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "jest",
+    "test-watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cirbuk/services.git"
+  },
+  "author": "Jophin Joseph",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cirbuk/services/issues"
+  },
+  "homepage": "https://github.com/cirbuk/services#readme",
+  "devDependencies": {
+    "@babel/core": "7.5.5",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/plugin-proposal-function-bind": "7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
+    "@babel/preset-env": "7.5.5",
+    "@babel/preset-typescript": "7.3.3",
+    "@rollup/plugin-babel": "5.1.0",
+    "@rollup/plugin-commonjs": "14.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "8.4.0",
+    "babel-jest": "24.8.0",
+    "jest": "24.8.0",
+    "rollup": "2.23.0",
+    "rollup-plugin-terser": "6.1.0"
+  },
+  "bit": {
+    "env": {},
+    "componentsDefaultDirectory": "components/{name}",
+    "packageManager": "npm"
+  },
+  "dependencies": {
+    "@bit/kubric.redux.reducks.utils": "0.0.4",
+    "chalk": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@kubric/litedash": "^0.0.3",
+    "@kubric/resolver": "^1.1.2",
+    "superagent": "^6.1.0"
+  }
+}
