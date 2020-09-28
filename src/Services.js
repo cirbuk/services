@@ -1,4 +1,5 @@
 import Executor from './Executor';
+import { isPlainObject } from "@kubric/litedash";
 
 const getPath = (currentPath, toBeAdded = '', defaultToAdd = '') => {
   if (toBeAdded) {
@@ -34,7 +35,7 @@ export default class Services {
   }
 
   generate() {
-    const {config} = this;
+    const { config } = this;
     let path = getPath('', config.path, '/');
     let host = config.host || '';
     let headers = config.headers || {};
@@ -64,10 +65,11 @@ export default class Services {
                 ...resourceHeaders,
                 ...(serviceConf.headers || {}),
               };
-              serviceConf.query = {
+              const serviceQuery = serviceConf.query || {};
+              serviceConf.query = isPlainObject(serviceQuery) ? {
                 ...resourceQuery,
-                ...(serviceConf.query || {}),
-              };
+                ...serviceQuery,
+              } : [resourceQuery, serviceQuery];
               resourceServices[service] = serviceOptions => new Executor(servicePath, serviceConf, {
                 global: this.options,
                 service: serviceOptions

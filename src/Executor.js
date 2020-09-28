@@ -49,7 +49,7 @@ export default class Executor {
     this.servicePath = servicePath;
     this.serviceConfig = serviceConf;
     this.eventHandlers = {};
-    this.plugins = [ ...gPlugins ];
+    this.plugins = [...gPlugins];
     this.storeKey = serviceConf.storeKey || '';
     this.actionPrefix = `${(aPrefix.length > 0 ? `${aPrefix}/` : '')}${this.storeKey}`;
     if (!isUndefined(actions)) {
@@ -127,17 +127,27 @@ export default class Executor {
     return url;
   };
 
+  _resolveQuery(triggerData) {
+    const { query = {} } = this.serviceConfig;
+    const resolver = new Resolver();
+    const resolvedQuery = resolver.resolve(query, triggerData);
+    return Array.isArray(resolvedQuery) ? resolvedQuery.reduce((acc, queryPart) => ({
+      ...acc,
+      ...queryPart
+    }), {}) : resolvedQuery;
+  }
+
   _setupRequest(triggerData) {
     if (isFunction(this.inputTransformer)) {
       triggerData = this.inputTransformer(triggerData);
     }
     const mappingResolver = new Resolver();
-    let { method = 'get', query = '', headers, data = {}, type, isFormData = false, isURLEncoded = false, deleteEmptyFields = false, storeKey } = this.serviceConfig;
+    let { method = 'get', headers, data = {}, type, isFormData = false, isURLEncoded = false, deleteEmptyFields = false } = this.serviceConfig;
     method = method.toLowerCase();
     method = (method === 'delete' ? 'del' : method);
     const url = this.url = this._resolveUrl(triggerData);
     const request = this.request = http[method](url)
-      .query(mappingResolver.resolve(query, triggerData));
+      .query(this._resolveQuery(triggerData));
     if (headers) {
       let resolvedHeaders = mappingResolver.resolve(headers, triggerData);
       mapValues(resolvedHeaders, (value, header) => {
