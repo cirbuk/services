@@ -1,5 +1,5 @@
 import Executor from './Executor';
-import { isPlainObject } from "@kubric/litedash";
+import { isPlainObject } from "@kubric/utils";
 
 const getPath = (currentPath, toBeAdded = '', defaultToAdd = '') => {
   if (toBeAdded) {

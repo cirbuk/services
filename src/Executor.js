@@ -1,4 +1,4 @@
-import { isUndefined, isNull, isFunction, mapValues, isString, isValidString } from "@kubric/litedash";
+import { isUndefined, isNull, isFunction, mapValues, isString, isValidString } from "@kubric/utils";
 import { getTypes, getActions } from "@bit/kubric.redux.reducks.utils";
 import Resolver from '@kubric/resolver';
 import http from 'superagent';

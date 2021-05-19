@@ -1,4 +1,4 @@
-import { isFunction, isString } from "@kubric/litedash";
+import { isFunction, isString } from "@kubric/utils";
 
 const rightPad = (str, len) => {
   let l = str.length;

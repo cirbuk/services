@@ -1,5 +1,5 @@
 import Services from './Services';
-import { isUndefined, isFunction, isPlainObject, isNull } from '@kubric/litedash';
+import { isUndefined, isFunction, isPlainObject, isNull } from '@kubric/utils';
 import Resolver from '@kubric/resolver';
 import transformers from './transformers';
 

@@ -1,6 +1,6 @@
 {
   "name": "@kubric/services",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Isomorphic configuration based services",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -26,6 +26,7 @@
     "@babel/plugin-proposal-object-rest-spread": "7.5.5",
     "@babel/preset-env": "7.5.5",
     "@babel/preset-typescript": "7.3.3",
+    "@kubric/utils": "^1.0.1",
     "@rollup/plugin-babel": "5.1.0",
     "@rollup/plugin-commonjs": "14.0.0",
     "@rollup/plugin-json": "^4.1.0",
@@ -45,8 +46,8 @@
     "chalk": "^4.1.0"
   },
   "peerDependencies": {
-    "@kubric/litedash": "^0.0.3",
-    "@kubric/resolver": "^1.1.2",
+    "@kubric/utils": "^1.0.1",
+    "@kubric/resolver": "^1.1.5",
     "superagent": "^6.1.0"
   }
 }
