@@ -1,6 +1,6 @@
 {
   "name": "@kubric/services",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Isomorphic configuration based services",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -20,21 +20,22 @@
   },
   "homepage": "https://github.com/cirbuk/services#readme",
   "devDependencies": {
-    "@babel/core": "7.5.5",
-    "@babel/plugin-proposal-class-properties": "7.5.5",
-    "@babel/plugin-proposal-function-bind": "7.2.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
-    "@babel/preset-env": "7.5.5",
-    "@babel/preset-typescript": "7.3.3",
-    "@kubric/utils": "^1.0.1",
-    "@rollup/plugin-babel": "5.1.0",
-    "@rollup/plugin-commonjs": "14.0.0",
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-proposal-function-bind": "^7.14.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.14.7",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-typescript": "^7.15.0",
+    "@kubric/utils": "*",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "8.4.0",
-    "babel-jest": "24.8.0",
-    "jest": "24.8.0",
-    "rollup": "2.23.0",
-    "rollup-plugin-terser": "6.1.0"
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "babel-jest": "^27.0.6",
+    "jest": "^27.0.6",
+    "rollup": "^2.56.2",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-terser": "^7.0.2"
   },
   "bit": {
     "env": {},
@@ -42,12 +43,11 @@
     "packageManager": "npm"
   },
   "dependencies": {
-    "@bit/kubric.redux.reducks.utils": "0.0.4",
-    "chalk": "^4.1.0"
+    "chalk": "^4.1.2"
   },
   "peerDependencies": {
-    "@kubric/utils": "^1.0.1",
     "@kubric/resolver": "^1.1.5",
+    "@kubric/utils": "^1.0.3",
     "superagent": "^6.1.0"
   }
 }

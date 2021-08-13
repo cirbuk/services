@@ -1,5 +1,4 @@
 import { isUndefined, isNull, isFunction, mapValues, isString, isValidString } from "@kubric/utils";
-import { getTypes, getActions } from "@bit/kubric.redux.reducks.utils";
 import Resolver from '@kubric/resolver';
 import http from 'superagent';
 import loggerPlugin from "./logger";
@@ -25,48 +24,30 @@ const createForm = data => {
 };
 
 export default class Executor {
-  static store;
-  static actionPrefix;
+  static responseCache = {};
 
-  static validateOptions({ store } = {}) {
-    if (!isUndefined(store) && !isFunction(store.dispatch)) {
-      throw new Error("Invalid store instance passed. No dispatch method found");
-    }
-  }
-
-  constructor(servicePath, serviceConf, { global = {}, service = {} } = {}) {
+  constructor(servicePath, serviceConf, { configPath, global = {}, service = {} } = {}) {
     this.globalOptions = global;
-    const { actionPrefix: gActionPrefix = '', plugins: gPlugins = [], logs: gLogOptions = {}, transformers: { input: gInputTransformer, response: gResponseTransformer } = {} } = global;
-    this.actionPrefix = gActionPrefix;
-    let { actionPrefix: sActionPrefix = '', actions, logs: sLogOptions = {}, transformers: { input: sInputTransformer, response: sResponseTransformer } = {} } = service;
+    this.configPath = configPath;
+    const {
+      plugins: gPlugins = [],
+      logs: gLogOptions = {},
+      transformers: { input: gInputTransformer, response: gResponseTransformer } = {}
+    } = global;
+    let {
+      logs: sLogOptions = {},
+      transformers: { input: sInputTransformer, response: sResponseTransformer } = {}
+    } = service;
     this.logOptions = {
       ...gLogOptions,
       ...sLogOptions
     };
     this.inputTransformer = isFunction(sInputTransformer) ? sInputTransformer : gInputTransformer;
     this.responseTransformer = isFunction(sResponseTransformer) ? sResponseTransformer : gResponseTransformer;
-    const aPrefix = sActionPrefix || gActionPrefix;
     this.servicePath = servicePath;
     this.serviceConfig = serviceConf;
     this.eventHandlers = {};
     this.plugins = [...gPlugins];
-    this.storeKey = serviceConf.storeKey || '';
-    this.actionPrefix = `${(aPrefix.length > 0 ? `${aPrefix}/` : '')}${this.storeKey}`;
-    if (!isUndefined(actions)) {
-      this.actions = actions;
-    } else {
-      this.actions = getActions(getTypes([
-        'INITIATED',
-        'COMPLETED',
-        'FAILED',
-        'PROGRESSED',
-      ], this.actionPrefix));
-    }
-  }
-
-  getStore() {
-    const { store, getStore } = this.globalOptions;
-    return store || getStore();
   }
 
   _addField(field, data) {
@@ -142,7 +123,15 @@ export default class Executor {
       triggerData = this.inputTransformer(triggerData);
     }
     const mappingResolver = new Resolver();
-    let { method = 'get', headers, data = {}, type, isFormData = false, isURLEncoded = false, deleteEmptyFields = false } = this.serviceConfig;
+    let {
+      method = 'get',
+      headers,
+      data = {},
+      type,
+      isFormData = false,
+      isURLEncoded = false,
+      deleteEmptyFields = false
+    } = this.serviceConfig;
     method = method.toLowerCase();
     method = (method === 'delete' ? 'del' : method);
     const url = this.url = this._resolveUrl(triggerData);
@@ -168,7 +157,7 @@ export default class Executor {
           sendData = false;
         }
       } else if (isURLEncoded) {
-        data = Object.keys(resolvedData).forEach(key => {
+        Object.keys(resolvedData).forEach(key => {
           const val = resolvedData[key];
           if (Array.isArray(val)) {
             val.forEach(value => request.send(`${key}=${getURLEncodedValue(value)}`));
@@ -216,55 +205,39 @@ export default class Executor {
     });
   }
 
-  _progressHandler(progressData = {}, e) {
-    const store = this.getStore();
-    store && store.dispatch(this.actions.progressed({
-      ...progressData,
-      progressPercent: e.percent,
-    }));
-  }
-
-  send(serviceData, { extraData = {} } = {}) {
-    this._setupRequest(serviceData);
-    if (this.shouldNotifyStore) {
-      const actionPayload = {
-        serviceData,
-        extraData,
-      };
-      const store = this.getStore();
-      store && store.dispatch(this.actions.initiated(actionPayload));
-      if (this.shouldNotifyProgress) {
-        this.request.on('progress', this._progressHandler.bind(this, actionPayload));
-      }
-      return this._fireRequest()
-        .then(response => {
-          let payload = {
-            ...actionPayload,
-            response,
-          };
-          store && store.dispatch(this.actions.completed(payload));
-          return response;
-        })
-        .catch(err => {
-          store && store.dispatch(this.actions.failed({
-            ...actionPayload,
-            err: (err.response && err.response.body) || undefined,
-            status: err.status,
-          }));
-          throw err;
-        })
-    } else {
-      return this._fireRequest();
+  cacheResponse(response, isErred = false) {
+    Executor.responseCache[this.cacheKey] = {
+      response,
+      isErred
     }
   }
 
-  notifyStore(shouldNotify = true) {
-    this.shouldNotifyStore = shouldNotify;
-    return this;
+  send(serviceData) {
+    const cacheEnabled = isValidString(this.cacheKey);
+    if (cacheEnabled) {
+      const { response, isErred = false } = Executor.responseCache[this.cacheKey] || {};
+      if (!isUndefined(response)) {
+        if (isFunction(response.then)) {
+          return response;
+        }
+        return isErred ? Promise.reject(response) : Promise.resolve(response);
+      }
+    }
+    this._setupRequest(serviceData);
+    const promise = this._fireRequest()
+      .then(resp => {
+        this.cacheResponse(resp);
+        return resp;
+      }).catch(err => {
+        this.cacheResponse(err, true);
+        throw err;
+      });
+    this.cacheResponse(promise);
+    return promise;
   }
 
-  notifyProgress(shouldNotify = true) {
-    this.shouldNotifyProgress = shouldNotify;
+  cache(cacheKey = "") {
+    this.cacheKey = `${this.configPath}${isValidString(cacheKey) ? `:${cacheKey}` : ""}`;
     return this;
   }
 

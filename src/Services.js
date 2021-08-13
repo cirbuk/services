@@ -21,16 +21,10 @@ export default class Services {
   }
 
   setOptions(options) {
-    Executor.validateOptions(options);
     this.options = options;
   }
 
   setOption(option, value) {
-    const proposedOptions = {
-      ...(this.options || {}),
-      [option]: value
-    };
-    Executor.validateOptions(proposedOptions);
     this.options[option] = value;
   }
 
@@ -71,12 +65,10 @@ export default class Services {
                 ...serviceQuery,
               } : [resourceQuery, serviceQuery];
               resourceServices[service] = serviceOptions => new Executor(servicePath, serviceConf, {
+                configPath: `${resource}.${service}`,
                 global: this.options,
                 service: serviceOptions
               });
-              if (serviceConf.storeKey) {
-                resourceServices[service].storeKey = serviceConf.storeKey;
-              }
             });
         }
 
@@ -88,6 +80,7 @@ export default class Services {
             headers: resourceHeaders,
             query: resourceQuery,
           }, {
+            configPath: `${resource}.get`,
             global: this.options,
             service: serviceOptions
           });
@@ -101,6 +94,7 @@ export default class Services {
             headers: resourceHeaders,
             query: resourceQuery,
           }, {
+            configPath: `${resource}.save`,
             global: this.options,
             service: serviceOptions
           });
@@ -114,6 +108,7 @@ export default class Services {
             headers: resourceHeaders,
             query: resourceQuery,
           }, {
+            configPath: `${resource}.delete`,
             global: this.options,
             service: serviceOptions
           });
