@@ -1,5 +1,7 @@
+import {isPlainObject, isValidString} from "@kubric/utils";
+import Resolver from '@kubric/resolver';
+
 import Executor from './Executor';
-import { isPlainObject } from "@kubric/utils";
 
 const getPath = (currentPath, toBeAdded = '', defaultToAdd = '') => {
   if (toBeAdded) {
@@ -43,6 +45,7 @@ export default class Services {
         let resourceHost = resourceConf.host || host;
         let resourceHeaders = {
           ...headers,
+          // Note: for this top level headers, resolver mapping support is not enabled for now.
           ...(resourceConf.headers || {}),
         };
         let resourceQuery = {
@@ -55,9 +58,24 @@ export default class Services {
               let serviceConf = resourceConf.services[service];
               let servicePath = getPath(resourcePath, serviceConf.path, '');
               serviceConf.host = serviceConf.host || resourceHost;
+
+              let serviceConfHeaders;
+              // for when headers have resolver mapping
+              if (isValidString(serviceConf.headers)) {
+                  // create a resolvable object for resolving at runtime when send() is invoked
+                  if (Resolver.hasAnyMapping(serviceConf.headers)) {
+                      serviceConfHeaders = {
+                            "__headers__": serviceConf.headers
+                      }
+                  }
+                  // if it's not a valid mapping, ignore it as headers should be either an object or a resolvable mapping string
+              } else {
+                  serviceConfHeaders = serviceConf.headers
+              }
+
               serviceConf.headers = {
                 ...resourceHeaders,
-                ...(serviceConf.headers || {}),
+                ...(serviceConfHeaders || {}),
               };
               const serviceQuery = serviceConf.query || {};
               serviceConf.query = isPlainObject(serviceQuery) ? {
