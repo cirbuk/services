@@ -1,4 +1,4 @@
-import { isUndefined, isNull, isFunction, mapValues, isString, isValidString } from "@kubric/utils";
+import {isUndefined, isNull, isFunction, mapValues, isString, isValidString, isPlainObject} from "@kubric/utils";
 import Resolver from '@kubric/resolver';
 import http from 'superagent';
 import loggerPlugin from "./logger";
@@ -139,12 +139,25 @@ export default class Executor {
     const url = this.url = this._resolveUrl(triggerData);
     const request = this.request = http[method](url)
       .query(this._resolveQuery(triggerData));
+
     if (headers) {
+      // resolve the headers object
       let resolvedHeaders = mappingResolver.resolve(headers, triggerData);
+      // if the headers key itself was a resolver mapping, the initial data propagation would've bound the mapping to `__headers__` key which now is resolved
+      // The resolved object is now destructured to override the base headers
+      if (isPlainObject(resolvedHeaders.__headers__)) {
+        Object.assign(resolvedHeaders, resolvedHeaders.__headers__);
+      }
+
+      // remove the custom mapping key
+      // This is to be done even if resolving for the mapping failed.
+      delete resolvedHeaders.__headers__;
+
       mapValues(resolvedHeaders, (value, header) => {
         request.set(header, value);
       });
     }
+
     let sendData = method === 'post' || method === 'put' || method === 'patch';
     let resolvedData;
     if (triggerData) {

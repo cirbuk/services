@@ -47,7 +47,7 @@
     "chalk": "^4.1.2"
   },
   "peerDependencies": {
-    "@kubric/resolver": "^1.1.5",
+    "@kubric/resolver": "^1.2.0",
     "@kubric/utils": "^1.0.3",
     "superagent": "^6.1.0"
   }
