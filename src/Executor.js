@@ -132,6 +132,8 @@ export default class Executor {
       isURLEncoded = false,
       deleteEmptyFields = false
     } = this.serviceConfig;
+    // resolve method if it is a mapping string
+    method = mappingResolver.resolve(method, triggerData) || 'get';
     method = method.toLowerCase();
     method = (method === 'delete' ? 'del' : method);
     const url = this.url = this._resolveUrl(triggerData);
