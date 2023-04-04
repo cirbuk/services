@@ -152,3 +152,4 @@ typings/
 dist
 __release__
 .rpt2_cache
+.DS_Store

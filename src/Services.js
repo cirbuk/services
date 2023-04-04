@@ -12,7 +12,7 @@ const getPath = (currentPath, toBeAdded = '', defaultToAdd = '') => {
 };
 
 export default class Services {
-  constructor(config, options) {
+  constructor(config, options = {}) {
     this.config = config;
     this.setOptions(options);
     this.services = {};
@@ -22,7 +22,7 @@ export default class Services {
     return this.services;
   }
 
-  setOptions(options) {
+  setOptions(options = {}) {
     this.options = options;
   }
 
