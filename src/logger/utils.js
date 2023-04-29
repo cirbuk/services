@@ -1,4 +1,4 @@
-import { isFunction, isString } from "@kubric/utils";
+import { isFunction, isString, isValidString } from "@kubric/utils";
 
 const rightPad = (str, len) => {
   let l = str.length;
@@ -23,9 +23,9 @@ export const prefix = (timestamp, prefixer) => {
   return str;
 };
 
-export const protocol = uri => rightPad(uri.protocol !== null ? uri.protocol.toUpperCase().replace(/\W/g, '') : '', 5);
+export const protocol = uri => rightPad(isValidString(uri.protocol) ? uri.protocol.toUpperCase().replace(/\W/g, '') : '', 5);
 
-export const method = req => rightPad(req.method.toUpperCase(), 5);
+export const method = req => rightPad(isValidString(req.method) ? req.method.toUpperCase() : "", 5);
 
 export const path = req => `${req.url}`;
 
