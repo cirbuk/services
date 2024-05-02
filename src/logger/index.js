@@ -7,6 +7,19 @@ const messagers = {
   unformatted,
 };
 
+const getUrl = (req) => {
+  let {url} = req;
+  if (!url.startsWith('http')) {
+    if (typeof window !== 'undefined') {
+      // eslint-disable-next-line no-undef
+      url = `${window.location.origin}${url}`;
+    } else {
+      return {};
+    }
+  }
+  return new URL(url);
+};
+
 const attachSuperagentLogger = (options, req) => {
   const {
     logger = console,
@@ -16,7 +29,7 @@ const attachSuperagentLogger = (options, req) => {
     timestamp = false,
     prefix,
   } = options;
-  const uri = new URL(req.url);
+  const uri = getUrl(req);
   const messager = messagers[format ? 'formatted' : 'unformatted'](
     logger,
     req,
