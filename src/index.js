@@ -48,6 +48,7 @@ export class Manager {
     const {config} = this;
     const {logger} = this.logOptions;
     const serviceDef = resolver.resolve(config, this.initData, {
+      filters: [new RegExp(`^${this.initKey}`)],
       mappers: [
         [
           /\[\[(.+?)]]/,

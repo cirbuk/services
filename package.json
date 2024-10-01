@@ -1,6 +1,6 @@
 {
   "name": "@kubric/services",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Isomorphic configuration based services",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -12,7 +12,7 @@
     "lint": "eslint --fix --ext .js,.json,.ts src/"
   },
   "engines": {
-    "node": ">=18.18.0"
+    "node": ">=20.16.0"
   },
   "repository": {
     "type": "git",
@@ -65,8 +65,8 @@
     "chalk": "^4.1.2"
   },
   "peerDependencies": {
-    "@kubric/resolver": "^1.3.2",
-    "@kubric/utils": "^2.0.0",
+    "@kubric/resolver": "^1.4.1",
+    "@kubric/utils": "^2.0.5",
     "superagent": "^6.1.0"
   }
 }
