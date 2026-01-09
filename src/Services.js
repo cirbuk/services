@@ -1,7 +1,8 @@
 import {isPlainObject, isValidString} from '@kubric/utils';
 import Resolver from '@kubric/resolver';
 
-import Executor from './Executor';
+import XHRExecutor from './XHRExecutor';
+import FetchExecutor from './FetchExecutor';
 
 const getPath = (currentPath, toBeAdded = '', defaultToAdd = '') => {
   if (toBeAdded) {
@@ -29,6 +30,11 @@ export default class Services {
     this.options[option] = value;
   }
 
+  _getExecutor() {
+    const adapter = this.options?.adapter || 'xhr';
+    return adapter === 'fetch' ? FetchExecutor : XHRExecutor;
+  }
+
   generate() {
     const {config} = this;
     const path = getPath('', config.path, '/');
@@ -36,6 +42,7 @@ export default class Services {
     const headers = config.headers || {};
     const query = config.query || {};
     const services = {};
+    const Executor = this._getExecutor();
     Object.keys(config.resources).forEach((resource) => {
       const resourceConf = config.resources[resource];
       const resourceServices = {};

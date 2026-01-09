@@ -41,7 +41,7 @@ export default [
       resolve(),
       commonjs(),
       json(),
-      terser(),
+      // terser(),
     ],
     external: (id) => id.includes('@babel/runtime') || externalSet.has(id),
   },
